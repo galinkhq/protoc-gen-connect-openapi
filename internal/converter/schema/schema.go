@@ -136,11 +136,14 @@ func FieldToSchema(opts options.Options, parent *base.SchemaProxy, tt protorefle
 
 	if tt.IsMap() {
 		// Handle maps
-		root := ScalarFieldToSchema(opts, parent, tt, false)
-		root.Title = string(tt.Name())
-		root.Type = []string{"object"}
-		root.Description = util.TypeFieldDescription(opts, tt)
-		root.AdditionalProperties = &base.DynamicValue[*base.SchemaProxy, bool]{A: FieldToSchema(opts, parent, tt.MapValue())}
+		root := &base.Schema{
+			ParentProxy:          parent,
+			Title:                string(tt.Name()),
+			Description:          util.TypeFieldDescription(opts, tt),
+			Type:                 []string{"object"},
+			Deprecated:           util.IsFieldDeprecated(tt),
+			AdditionalProperties: &base.DynamicValue[*base.SchemaProxy, bool]{A: FieldToSchema(opts, parent, tt.MapValue())},
+		}
 		root = opts.FieldAnnotator.AnnotateField(opts, root, tt, false)
 		return base.CreateSchemaProxy(root)
 	} else if tt.IsList() {

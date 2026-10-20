@@ -466,10 +466,6 @@
               {
                 "team": "payments",
                 "region": "eu-west-1"
-              },
-              {
-                "team": "payments",
-                "region": "eu-west-1"
               }
             ],
             "title": "labels",
