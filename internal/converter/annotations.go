@@ -32,6 +32,13 @@ func (*annotator) AnnotateField(opts options.Options, schema *base.Schema, desc 
 	return schema
 }
 
+func (*annotator) AnnotateOneof(opts options.Options, group *base.Schema, desc protoreflect.OneofDescriptor) *base.Schema {
+	if opts.FeatureEnabled(options.FeatureProtovalidate) {
+		group = protovalidate.SchemaWithOneofAnnotations(opts, group, desc)
+	}
+	return group
+}
+
 func (*annotator) AnnotateFieldReference(opts options.Options, parent *base.Schema, desc protoreflect.FieldDescriptor) *base.Schema {
 	if opts.FeatureEnabled(options.FeatureProtovalidate) {
 		parent = protovalidate.PopulateParentProperties(opts, parent, desc)

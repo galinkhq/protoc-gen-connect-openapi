@@ -126,6 +126,7 @@ type Options struct {
 
 	MessageAnnotator        MessageAnnotator
 	FieldAnnotator          FieldAnnotator
+	OneofAnnotator          OneofAnnotator
 	FieldReferenceAnnotator FieldReferenceAnnotator
 
 	ExtensionTypeResolver protoregistry.ExtensionTypeResolver

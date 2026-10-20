@@ -85,6 +85,7 @@ func MessageToSchema(opts options.Options, tt protoreflect.MessageDescriptor) (s
 		}
 		if len(allOfs) == 1 {
 			group := allOfs[0].Schema()
+			s.OneOf = group.OneOf
 			s.AnyOf = group.AnyOf
 			s.Not = group.Not
 		} else {
@@ -284,8 +285,9 @@ func makeOneOfGroup(opts options.Options, fields []protoreflect.FieldDescriptor)
 	// forbidden pairs would grow with the square of the member count; forbid
 	// "some member set, but not exactly one" instead, which says the same thing
 	// with two presence lists. It sits under not, which no documentation
-	// renderer reads as a list of variants. (buf.validate.oneof).required
-	// layers exactly-one on top in the protovalidate feature.
+	// renderer reads as a list of variants. With (buf.validate.oneof).required,
+	// the protovalidate annotator turns the variants into a oneOf requiring
+	// exactly one member instead.
 	if len(fieldNames) > 1 {
 		group.Not = base.CreateSchemaProxy(&base.Schema{
 			AllOf: []*base.SchemaProxy{
@@ -296,7 +298,7 @@ func makeOneOfGroup(opts options.Options, fields []protoreflect.FieldDescriptor)
 			},
 		})
 	}
-	return base.CreateSchemaProxy(group)
+	return base.CreateSchemaProxy(opts.OneofAnnotator.AnnotateOneof(opts, group, fields[0].ContainingOneof()))
 }
 
 // presenceOf builds one "this field is set" branch per name. oneOf over them
