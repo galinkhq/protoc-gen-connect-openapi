@@ -209,6 +209,9 @@ message HelloRequest {
     example: {yaml: "[20, 40, 60]"}
   }];
   repeated string items = 3 [(gnostic.openapi.v3.property).unique_items = true];
+  map<string, string> labels = 4 [(gnostic.openapi.v3.property) = {
+    example: {yaml: "{team: payments, region: eu-west-1}"}
+  }];
 }
 
 // The response message containing the greetings

@@ -297,6 +297,24 @@
               "title": "items",
               "uniqueItems": true
             }
+          },
+          {
+            "name": "labels.key",
+            "in": "query",
+            "description": "The labels.key query parameter.",
+            "schema": {
+              "type": "string",
+              "title": "key"
+            }
+          },
+          {
+            "name": "labels.value",
+            "in": "query",
+            "description": "The labels.value query parameter.",
+            "schema": {
+              "type": "string",
+              "title": "value"
+            }
           }
         ],
         "responses": {
@@ -510,6 +528,24 @@
             },
             "title": "items",
             "uniqueItems": true
+          },
+          "labels": {
+            "type": "object",
+            "examples": [
+              {
+                "team": "payments",
+                "region": "eu-west-1"
+              },
+              {
+                "team": "payments",
+                "region": "eu-west-1"
+              }
+            ],
+            "title": "labels",
+            "additionalProperties": {
+              "type": "string",
+              "title": "value"
+            }
           }
         },
         "title": "Custom title for a message",
