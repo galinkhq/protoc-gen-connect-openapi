@@ -202,18 +202,6 @@ paths:
               type: string
             title: items
             uniqueItems: true
-        - name: labels.key
-          in: query
-          description: The labels.key query parameter.
-          schema:
-            type: string
-            title: key
-        - name: labels.value
-          in: query
-          description: The labels.value query parameter.
-          schema:
-            type: string
-            title: value
       responses:
         default:
           $ref: '#/components/responses/example_with_gnostic.DefaultResponse'
@@ -333,6 +321,17 @@ components:
         message:
           type: string
           title: message
+        labels:
+          type: object
+          examples:
+            - team: payments
+              region: eu-west-1
+            - team: payments
+              region: eu-west-1
+          title: labels
+          additionalProperties:
+            type: string
+            title: value
       title: HelloReply
       additionalProperties: false
       description: The response message containing the greetings
@@ -372,17 +371,6 @@ components:
             type: string
           title: items
           uniqueItems: true
-        labels:
-          type: object
-          examples:
-            - team: payments
-              region: eu-west-1
-            - team: payments
-              region: eu-west-1
-          title: labels
-          additionalProperties:
-            type: string
-            title: value
       title: Custom title for a message
       additionalProperties: false
       description: Custom description for a message
