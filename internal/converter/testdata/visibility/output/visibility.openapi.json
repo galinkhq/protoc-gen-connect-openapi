@@ -129,10 +129,75 @@
           }
         }
       }
+    },
+    "/v1/subjects": {
+      "post": {
+        "tags": [
+          "visibility.VisibilityService"
+        ],
+        "summary": "CreateSubject",
+        "operationId": "visibility.VisibilityService.CreateSubject",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/visibility.CreateSubjectRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Success",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/visibility.Message"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "visibility.CreateSubjectRequest": {
+        "type": "object",
+        "oneOf": [
+          {
+            "type": "object",
+            "properties": {
+              "kyb": {
+                "type": "string",
+                "title": "kyb"
+              }
+            },
+            "title": "kyb",
+            "required": [
+              "kyb"
+            ]
+          },
+          {
+            "type": "object",
+            "properties": {
+              "kyc": {
+                "type": "string",
+                "title": "kyc"
+              }
+            },
+            "title": "kyc",
+            "required": [
+              "kyc"
+            ]
+          }
+        ],
+        "unevaluatedProperties": false,
+        "title": "CreateSubjectRequest",
+        "description": "A required oneof with a member hidden by visibility: the exactly-one\n constraint must only list the visible members."
+      },
       "visibility.GetMessageRequest": {
         "type": "object",
         "properties": {
