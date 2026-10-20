@@ -2,6 +2,7 @@ syntax = "proto3";
 
 package visibility;
 
+import "buf/validate/validate.proto";
 import "google/api/annotations.proto";
 import "google/api/visibility.proto";
 
@@ -14,6 +15,13 @@ service VisibilityService {
 
   rpc ListMessages(ListMessagesRequest) returns (Message) {
     option (google.api.http) = {get: "/v1/messages"};
+  }
+
+  rpc CreateSubject(CreateSubjectRequest) returns (Message) {
+    option (google.api.http) = {
+      post: "/v1/subjects"
+      body: "*"
+    };
   }
 }
 
@@ -45,6 +53,17 @@ message ListMessagesRequest {
   string preview_filter = 3 [(google.api.field_visibility).restriction = "PREVIEW"];
   string external_filter = 4 [(google.api.field_visibility).restriction = "EXTERNAL"];
   NestedFilter nested = 5;
+}
+
+// A required oneof with a member hidden by visibility: the exactly-one
+// constraint must only list the visible members.
+message CreateSubjectRequest {
+  oneof subject {
+    option (buf.validate.oneof).required = true;
+    string kyc = 1;
+    string kyb = 2;
+    string external_ref = 3 [(google.api.field_visibility).restriction = "EXTERNAL"];
+  }
 }
 
 message NestedFilter {

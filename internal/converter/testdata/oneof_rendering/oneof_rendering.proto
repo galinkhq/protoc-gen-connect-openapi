@@ -27,6 +27,13 @@ service ComplianceService {
       body: "*"
     };
   }
+
+  rpc CreateRequiredScreening(RequiredScreeningRequest) returns (google.protobuf.Empty) {
+    option (google.api.http) = {
+      post: "/required-screening"
+      body: "*"
+    };
+  }
 }
 
 message ComplianceRequest {
@@ -52,6 +59,22 @@ message RequiredComplianceRequest {
 message ScreeningRequest {
   string reference = 1;
   oneof subject {
+    string kyc = 2;
+    string kyb = 3;
+  }
+  oneof scope {
+    string region = 4;
+    bool global = 5;
+  }
+}
+
+// RequiredScreeningRequest carries a required oneof next to a plain one, so
+// each group renders in its own allOf entry: exactly one subject member, at
+// most one scope member.
+message RequiredScreeningRequest {
+  string reference = 1;
+  oneof subject {
+    option (buf.validate.oneof).required = true;
     string kyc = 2;
     string kyb = 3;
   }

@@ -82,6 +82,9 @@ func ConvertWithOptions(req *pluginpb.CodeGeneratorRequest, opts options.Options
 	if opts.FieldAnnotator == nil {
 		opts.FieldAnnotator = annotator
 	}
+	if opts.OneofAnnotator == nil {
+		opts.OneofAnnotator = annotator
+	}
 	if opts.FieldReferenceAnnotator == nil {
 		opts.FieldReferenceAnnotator = annotator
 	}

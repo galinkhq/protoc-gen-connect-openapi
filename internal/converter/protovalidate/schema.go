@@ -23,36 +23,6 @@ import (
 )
 
 func SchemaWithMessageAnnotations(opts options.Options, schema *base.Schema, desc protoreflect.MessageDescriptor) *base.Schema {
-	// A declared oneof marked required must have exactly one member set. The
-	// generated oneOf group admits the empty state on its own, matching plain
-	// protobuf semantics, so the constraint is layered on here.
-	oneofs := desc.Oneofs()
-	for i := 0; i < oneofs.Len(); i++ {
-		oneof := oneofs.Get(i)
-		if oneof.IsSynthetic() {
-			continue
-		}
-		oneofRules, err := protovalidate.ResolveOneofRules(oneof)
-		if err != nil {
-			opts.Logger.Warn("unable to resolve oneof rules", slog.Any("error", err), slog.Any("oneof", oneof.FullName()))
-			continue
-		}
-		if !oneofRules.GetRequired() {
-			continue
-		}
-		fields := oneof.Fields()
-		oneOfs := make([]*base.SchemaProxy, 0, fields.Len())
-		for j := 0; j < fields.Len(); j++ {
-			oneOfs = append(oneOfs, base.CreateSchemaProxy(&base.Schema{
-				Required: []string{util.MakeFieldName(opts, fields.Get(j))},
-			}))
-		}
-		if len(oneOfs) > 0 {
-			schema.AllOf = append(schema.AllOf, base.CreateSchemaProxy(&base.Schema{
-				OneOf: oneOfs,
-			}))
-		}
-	}
 	rules, err := protovalidate.ResolveMessageRules(desc)
 	if err != nil {
 		opts.Logger.Warn("unable to resolve message rules", slog.Any("error", err))
@@ -85,6 +55,27 @@ func SchemaWithMessageAnnotations(opts options.Options, schema *base.Schema, des
 		}
 	}
 	return schema
+}
+
+// SchemaWithOneofAnnotations applies the rules of a oneof to the schema
+// generated for it. A required oneof must have exactly one member set: each
+// variant requires its member and the variants become a oneOf, which also makes
+// the at-most-one "not" redundant.
+func SchemaWithOneofAnnotations(opts options.Options, group *base.Schema, desc protoreflect.OneofDescriptor) *base.Schema {
+	rules, err := protovalidate.ResolveOneofRules(desc)
+	if err != nil {
+		opts.Logger.Warn("unable to resolve oneof rules", slog.Any("error", err), slog.Any("oneof", desc.FullName()))
+		return group
+	}
+	if !rules.GetRequired() {
+		return group
+	}
+	for _, variant := range group.AnyOf {
+		variantSchema := variant.Schema()
+		variantSchema.Required = append(variantSchema.Required, variantSchema.Properties.First().Key())
+	}
+	group.OneOf, group.AnyOf, group.Not = group.AnyOf, nil, nil
+	return group
 }
 
 func SchemaWithFieldAnnotations(opts options.Options, schema *base.Schema, desc protoreflect.FieldDescriptor, onlyScalar bool) *base.Schema {

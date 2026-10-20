@@ -214,4 +214,7 @@ message HelloRequest {
 // The response message containing the greetings
 message HelloReply {
   string message = 1;
+  map<string, string> labels = 2 [(gnostic.openapi.v3.property) = {
+    example: {yaml: "{team: payments, region: eu-west-1}"}
+  }];
 }

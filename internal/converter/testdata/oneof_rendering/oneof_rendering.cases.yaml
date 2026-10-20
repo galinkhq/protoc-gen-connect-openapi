@@ -94,3 +94,39 @@ cases:
       Content-Type: application/json
     errors:
       - ".*"
+
+  - name: "required-and-plain-oneofs-no-subject"
+    path: "/required-screening"
+    body: '{"reference": "case-4", "region": "eu"}'
+    headers:
+      Content-Type: application/json
+    errors:
+      - ".*"
+
+  - name: "required-and-plain-oneofs-subject-only"
+    path: "/required-screening"
+    body: '{"reference": "case-4", "kyc": "person"}'
+    headers:
+      Content-Type: application/json
+
+  - name: "required-and-plain-oneofs-one-member-each"
+    path: "/required-screening"
+    body: '{"reference": "case-4", "kyb": "business", "global": true}'
+    headers:
+      Content-Type: application/json
+
+  - name: "required-and-plain-oneofs-two-members-of-subject"
+    path: "/required-screening"
+    body: '{"kyc": "person", "kyb": "business"}'
+    headers:
+      Content-Type: application/json
+    errors:
+      - ".*"
+
+  - name: "required-and-plain-oneofs-two-members-of-scope"
+    path: "/required-screening"
+    body: '{"kyc": "person", "region": "eu", "global": true}'
+    headers:
+      Content-Type: application/json
+    errors:
+      - ".*"

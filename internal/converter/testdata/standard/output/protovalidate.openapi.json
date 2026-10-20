@@ -309,23 +309,7 @@
       },
       "protovalidate.CELMessage": {
         "type": "object",
-        "allOf": [
-          {
-            "oneOf": [
-              {
-                "required": [
-                  "a"
-                ]
-              },
-              {
-                "required": [
-                  "b"
-                ]
-              }
-            ]
-          }
-        ],
-        "anyOf": [
+        "oneOf": [
           {
             "type": "object",
             "properties": {
@@ -335,7 +319,10 @@
                 "minLength": 1
               }
             },
-            "title": "a"
+            "title": "a",
+            "required": [
+              "a"
+            ]
           },
           {
             "type": "object",
@@ -345,44 +332,13 @@
                 "title": "b"
               }
             },
-            "title": "b"
+            "title": "b",
+            "required": [
+              "b"
+            ]
           }
         ],
         "unevaluatedProperties": false,
-        "not": {
-          "allOf": [
-            {
-              "anyOf": [
-                {
-                  "required": [
-                    "a"
-                  ]
-                },
-                {
-                  "required": [
-                    "b"
-                  ]
-                }
-              ]
-            },
-            {
-              "not": {
-                "oneOf": [
-                  {
-                    "required": [
-                      "a"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "b"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "title": "CELMessage"
       },
       "protovalidate.LotsOfValidationRules": {
@@ -1862,23 +1818,7 @@
       },
       "protovalidate.OneOfMessage": {
         "type": "object",
-        "allOf": [
-          {
-            "oneOf": [
-              {
-                "required": [
-                  "a"
-                ]
-              },
-              {
-                "required": [
-                  "b"
-                ]
-              }
-            ]
-          }
-        ],
-        "anyOf": [
+        "oneOf": [
           {
             "type": "object",
             "properties": {
@@ -1888,7 +1828,10 @@
                 "minLength": 1
               }
             },
-            "title": "a"
+            "title": "a",
+            "required": [
+              "a"
+            ]
           },
           {
             "type": "object",
@@ -1898,44 +1841,13 @@
                 "title": "b"
               }
             },
-            "title": "b"
+            "title": "b",
+            "required": [
+              "b"
+            ]
           }
         ],
         "unevaluatedProperties": false,
-        "not": {
-          "allOf": [
-            {
-              "anyOf": [
-                {
-                  "required": [
-                    "a"
-                  ]
-                },
-                {
-                  "required": [
-                    "b"
-                  ]
-                }
-              ]
-            },
-            {
-              "not": {
-                "oneOf": [
-                  {
-                    "required": [
-                      "a"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "b"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "title": "OneOfMessage"
       }
     }

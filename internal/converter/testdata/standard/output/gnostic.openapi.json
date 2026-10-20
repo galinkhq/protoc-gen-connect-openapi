@@ -459,6 +459,20 @@
           "message": {
             "type": "string",
             "title": "message"
+          },
+          "labels": {
+            "type": "object",
+            "examples": [
+              {
+                "team": "payments",
+                "region": "eu-west-1"
+              }
+            ],
+            "title": "labels",
+            "additionalProperties": {
+              "type": "string",
+              "title": "value"
+            }
           }
         },
         "title": "HelloReply",

@@ -1,7 +1,6 @@
 package gnostic
 
 import (
-	"fmt"
 	"log/slog"
 	"slices"
 
@@ -69,11 +68,13 @@ func schemaWithAnnotations(opts options.Options, schema *base.Schema, gnosticSch
 		if gnosticSchema.Example.Yaml != "" {
 			var v string
 			if err := yaml.Unmarshal([]byte(gnosticSchema.Example.GetYaml()), &v); err != nil {
-				var node any
-				if err := yaml.Unmarshal([]byte(gnosticSchema.Example.GetYaml()), &node); err != nil {
+				// Keep the parsed YAML node itself: it renders mappings and
+				// sequences with their key order and scalar types.
+				var node yaml.Node
+				if err := yaml.Unmarshal([]byte(gnosticSchema.Example.GetYaml()), &node); err != nil || len(node.Content) == 0 {
 					opts.Logger.Warn("unable to unmarshal example", slog.Any("error", err))
 				} else {
-					schema.Examples = append(schema.Examples, expandExampleEntry(node))
+					schema.Examples = append(schema.Examples, withBlockStyle(node.Content[0]))
 				}
 			} else {
 				schema.Examples = append(schema.Examples, utils.CreateStringNode(v))
@@ -229,30 +230,12 @@ func schemaWithAnnotations(opts options.Options, schema *base.Schema, gnosticSch
 	return schema
 }
 
-func expandExampleEntry(entry any) *yaml.Node {
-	switch vv := entry.(type) {
-	//Handle mapping nodes
-	case map[any]any:
-		node := utils.CreateEmptyMapNode()
-		for k, v := range vv {
-			keyNode := utils.CreateStringNode(k.(string))
-			node.Content = append(node.Content, keyNode, expandExampleEntry(v))
-		}
-		return node
-	// Handle sequence nodes
-	case []any:
-		node := utils.CreateEmptySequenceNode()
-		for _, v := range vv {
-			node.Content = append(node.Content, expandExampleEntry(v))
-		}
-		return node
-	case float64:
-		return utils.CreateFloatNode(fmt.Sprintf("%v", vv))
-	case int:
-		return utils.CreateIntNode(fmt.Sprintf("%v", vv))
-	case string:
-		return utils.CreateStringNode(vv)
-	default:
-		return utils.CreateStringNode(fmt.Sprintf("%v", vv))
+// withBlockStyle drops the flow style an example may be written in, so YAML
+// output renders it in block style like the rest of the document.
+func withBlockStyle(node *yaml.Node) *yaml.Node {
+	node.Style &^= yaml.FlowStyle
+	for _, child := range node.Content {
+		withBlockStyle(child)
 	}
+	return node
 }
