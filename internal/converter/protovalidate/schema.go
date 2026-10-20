@@ -41,10 +41,27 @@ func SchemaWithMessageAnnotations(opts options.Options, schema *base.Schema, des
 			continue
 		}
 		fields := oneof.Fields()
-		oneOfs := make([]*base.SchemaProxy, 0, fields.Len())
+		fieldNames := make([]string, 0, fields.Len())
 		for j := 0; j < fields.Len(); j++ {
+			fieldNames = append(fieldNames, util.MakeFieldName(opts, fields.Get(j)))
+		}
+		// When the members were rendered as titled variants, the variants carry
+		// the constraint themselves: each one requires its member and they become
+		// a oneOf, which also makes the at-most-one "not" redundant. Documentation
+		// renderers then list the named variants once, instead of a second list
+		// of untitled required-only branches next to them.
+		if group := findOneofGroup(schema, fieldNames); group != nil {
+			for _, variant := range group.AnyOf {
+				variantSchema := variant.Schema()
+				variantSchema.Required = append(variantSchema.Required, variantSchema.Properties.First().Key())
+			}
+			group.OneOf, group.AnyOf, group.Not = group.AnyOf, nil, nil
+			continue
+		}
+		oneOfs := make([]*base.SchemaProxy, 0, len(fieldNames))
+		for _, fieldName := range fieldNames {
 			oneOfs = append(oneOfs, base.CreateSchemaProxy(&base.Schema{
-				Required: []string{util.MakeFieldName(opts, fields.Get(j))},
+				Required: []string{fieldName},
 			}))
 		}
 		if len(oneOfs) > 0 {
@@ -85,6 +102,42 @@ func SchemaWithMessageAnnotations(opts options.Options, schema *base.Schema, des
 		}
 	}
 	return schema
+}
+
+// findOneofGroup returns the schema holding the titled anyOf variants rendered
+// for a oneof with the given members: the message schema itself when the
+// message declares a single oneof, one of its allOf entries otherwise.
+func findOneofGroup(schema *base.Schema, fieldNames []string) *base.Schema {
+	candidates := []*base.Schema{schema}
+	for _, proxy := range schema.AllOf {
+		if sub := proxy.Schema(); sub != nil {
+			candidates = append(candidates, sub)
+		}
+	}
+	for _, candidate := range candidates {
+		if isOneofGroup(candidate, fieldNames) {
+			return candidate
+		}
+	}
+	return nil
+}
+
+// isOneofGroup reports whether the schema's anyOf holds exactly one variant per
+// member, each declaring that member as its only property.
+func isOneofGroup(schema *base.Schema, fieldNames []string) bool {
+	if len(schema.AnyOf) == 0 || len(schema.AnyOf) != len(fieldNames) {
+		return false
+	}
+	for _, variant := range schema.AnyOf {
+		variantSchema := variant.Schema()
+		if variantSchema == nil || variantSchema.Properties == nil || variantSchema.Properties.Len() != 1 {
+			return false
+		}
+		if !slices.Contains(fieldNames, variantSchema.Properties.First().Key()) {
+			return false
+		}
+	}
+	return true
 }
 
 func SchemaWithFieldAnnotations(opts options.Options, schema *base.Schema, desc protoreflect.FieldDescriptor, onlyScalar bool) *base.Schema {

@@ -102,39 +102,24 @@ components:
       title: ComplianceRequest
     oneof_rendering.RequiredComplianceRequest:
       type: object
-      allOf:
-        - oneOf:
-            - required:
-                - kyc
-            - required:
-                - kyb
-      anyOf:
+      oneOf:
         - type: object
           properties:
             kyb:
               type: string
               title: kyb
           title: kyb
+          required:
+            - kyb
         - type: object
           properties:
             kyc:
               type: string
               title: kyc
           title: kyc
+          required:
+            - kyc
       unevaluatedProperties: false
-      not:
-        allOf:
-          - anyOf:
-              - required:
-                  - kyb
-              - required:
-                  - kyc
-          - not:
-              oneOf:
-                - required:
-                    - kyb
-                - required:
-                    - kyc
       properties:
         reference:
           type: string

@@ -175,23 +175,7 @@
       },
       "oneof_rendering.RequiredComplianceRequest": {
         "type": "object",
-        "allOf": [
-          {
-            "oneOf": [
-              {
-                "required": [
-                  "kyc"
-                ]
-              },
-              {
-                "required": [
-                  "kyb"
-                ]
-              }
-            ]
-          }
-        ],
-        "anyOf": [
+        "oneOf": [
           {
             "type": "object",
             "properties": {
@@ -200,7 +184,10 @@
                 "title": "kyb"
               }
             },
-            "title": "kyb"
+            "title": "kyb",
+            "required": [
+              "kyb"
+            ]
           },
           {
             "type": "object",
@@ -210,44 +197,13 @@
                 "title": "kyc"
               }
             },
-            "title": "kyc"
+            "title": "kyc",
+            "required": [
+              "kyc"
+            ]
           }
         ],
         "unevaluatedProperties": false,
-        "not": {
-          "allOf": [
-            {
-              "anyOf": [
-                {
-                  "required": [
-                    "kyb"
-                  ]
-                },
-                {
-                  "required": [
-                    "kyc"
-                  ]
-                }
-              ]
-            },
-            {
-              "not": {
-                "oneOf": [
-                  {
-                    "required": [
-                      "kyb"
-                    ]
-                  },
-                  {
-                    "required": [
-                      "kyc"
-                    ]
-                  }
-                ]
-              }
-            }
-          ]
-        },
         "properties": {
           "reference": {
             "type": "string",
