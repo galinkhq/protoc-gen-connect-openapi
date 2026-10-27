@@ -1527,7 +1527,12 @@
           "MLIR_BRIDGE_ROLLOUT_ENABLED",
           "MLIR_BRIDGE_ROLLOUT_DISABLED"
         ],
-        "description": "An enum that describes the state of the MLIR bridge rollout."
+        "description": "An enum that describes the state of the MLIR bridge rollout.",
+        "x-enumDescriptions": {
+          "MLIR_BRIDGE_ROLLOUT_UNSPECIFIED": "If this field is left unspecified, the MLIR bridge may be selectively\n enabled on a per graph basis.",
+          "MLIR_BRIDGE_ROLLOUT_ENABLED": "Enabling the MLIR bridge enables it for all graphs in this session.",
+          "MLIR_BRIDGE_ROLLOUT_DISABLED": "Disabling the MLIR bridge disables it for all graphs in this session."
+        }
       },
       "tensorflow.CoordinatedJob": {
         "type": "object",
@@ -1913,7 +1918,23 @@
           "DT_FLOAT8_E5M2_REF",
           "DT_FLOAT8_E4M3FN_REF"
         ],
-        "description": "(== suppress_warning documentation-presence ==)\n LINT.IfChange"
+        "description": "(== suppress_warning documentation-presence ==)\n LINT.IfChange",
+        "x-enumDescriptions": {
+          "DT_INVALID": "Not a legal value for DataType.  Used to indicate a DataType field\n has not been set.",
+          "DT_FLOAT": "Data types that all computation devices are expected to be\n capable to support.",
+          "DT_COMPLEX64": "Single-precision complex",
+          "DT_QINT8": "Quantized int8",
+          "DT_QUINT8": "Quantized uint8",
+          "DT_QINT32": "Quantized int32",
+          "DT_BFLOAT16": "Float32 truncated to 16 bits.",
+          "DT_QINT16": "Quantized int16",
+          "DT_QUINT16": "Quantized uint16",
+          "DT_COMPLEX128": "Double-precision complex",
+          "DT_VARIANT": "Arbitrary C++ data types",
+          "DT_FLOAT8_E5M2": "5 exponent bits, 2 mantissa bits.",
+          "DT_FLOAT8_E4M3FN": "4 exponent bits, 3 mantissa bits, finite-only, with",
+          "DT_FLOAT_REF": "Do not use!  These are only for TF1's obsolete reference Variables.\n Every enum above should have a corresponding value below (verified by\n types_test)."
+        }
       },
       "tensorflow.DebugOptions": {
         "type": "object",
@@ -2248,7 +2269,32 @@
           "TFT_MUTEX_LOCK",
           "TFT_LEGACY_VARIANT"
         ],
-        "description": "LINT.IfChange\n Experimental. Represents the complete type information of a TensorFlow value."
+        "description": "LINT.IfChange\n Experimental. Represents the complete type information of a TensorFlow value.",
+        "x-enumDescriptions": {
+          "TFT_UNSET": "The default represents an uninitialized values.",
+          "TFT_VAR": "Type variables may serve as placeholder for any other type ID in type\n templates.\n\n Examples:\n   TFT_DATASET[TFT_VAR[\"T\"]] is a Dataset returning a type indicated by \"T\".\n   TFT_TENSOR[TFT_VAR[\"T\"]] is a Tensor of n element type indicated by \"T\".\n   TFT_TENSOR[TFT_VAR[\"T\"]], TFT_TENSOR[TFT_VAR[\"T\"]] are two tensors of\n     identical element types.\n   TFT_TENSOR[TFT_VAR[\"P\"]], TFT_TENSOR[TFT_VAR[\"Q\"]] are two tensors of\n     independent element types.",
+          "TFT_ANY": "Wildcard type. Describes a parameter of unknown type. In TensorFlow, that\n can mean either a \"Top\" type (accepts any type), or a dynamically typed\n object whose type is unknown in context.\n Important: \"unknown\" does not necessarily mean undeterminable!",
+          "TFT_PRODUCT": "The algebraic product type. This is an algebraic type that may be used just\n for logical grouping. Not to confused with TFT_TUPLE which describes a\n concrete object of several elements.\n\n Example:\n   TFT_DATASET[TFT_PRODUCT[TFT_TENSOR[TFT_INT32], TFT_TENSOR[TFT_FLOAT64]]]\n     is a Dataset producing two tensors, an integer one and a float one.",
+          "TFT_NAMED": "Represents a named field, with the name stored in the attribute.\n\n Parametrization:\n   TFT_NAMED[\u003ctype\u003e]{\u003cname\u003e}\n   * \u003ctype\u003e is the type of the field\n   * \u003cname\u003e is the field name, as string (thpugh can theoretically be an int\n     as well)\n\n Example:\n   TFT_RECORD[\n     TFT_NAMED[TFT_TENSOR[TFT_INT32]]{'foo'},\n     TFT_NAMED[TFT_TENSOR[TFT_FLOAT32]]{'bar'},\n   ]\n     is a structure with two fields, an int tensor \"foo\" and a float tensor\n     \"bar\".",
+          "TFT_FOR_EACH": "Template definition. Expands the variables by repeating a template as\n arguments of container.\n\n Parametrization:\n   TFT_FOR_EACH[\u003ccontainer_type\u003e, \u003ctemplate\u003e, \u003cexpansions\u003e]\n   * \u003ccontainer_type\u003e is the type of the container that the template will be\n     expanded into\n   * \u003ctemplate\u003e is any type definition that potentially contains type\n     variables\n   * \u003cexpansions\u003e is a TFT_VAR and may include more types in the future\n\n Example:\n   TFT_FOR_EACH[\n         TFT_PRODUCT,\n         TFT_TENSOR[TFT_VAR[\"t\"]],\n         TFT_VAR[\"t\"]\n     ]\n     will substitute a T = TFT_INT32 to TFT_PRODUCT[TFT_TENSOR[TFT_INT32]]\n     and a T = (TFT_INT32, TFT_INT64) to\n     TFT_PRODUCT[TFT_TENSOR[TFT_INT32], TFT_TENSOR[TFT_INT64]].",
+          "TFT_CALLABLE": "Callable types describe functions and ops.\n\n Parametrization:\n   TFT_CALLABLE[\u003carg type\u003e, \u003creturn type\u003e]\n   * \u003carg type\u003e is the type of the arguments; TFT_PRODUCT represents\n   multiple\n     arguments.\n   * \u003creturn type\u003e is the return type; TFT_PRODUCT represents multiple\n     return values (that means that callables returning multiple things\n     don't necessarily return a single tuple).\n\n Example:\n   TFT_CALLABLE[\n     TFT_ANY,\n     TFT_PRODUCT[TFT_TENSOR[TFT_INT32], TFT_TENSOR[TFT_FLOAT64]],\n   ]\n     is a callable with unspecified (for now) input arguments, and\n     two return values of type tensor.",
+          "TFT_TENSOR": "The usual Tensor. This is a parametric type.\n\n Parametrization:\n   TFT_TENSOR[\u003celement type\u003e, \u003cshape type\u003e]\n   * \u003celement type\u003e is currently limited to one of the element types\n     defined below.\n   * \u003cshape type\u003e is not yet defined, and may only be TFT_UNKNOWN for now.\n\n A TFT_SHAPE type will be defined in the future.\n\n Example:\n   TFT_TENSOR[TFT_INT32, TFT_UNKNOWN]\n     is a Tensor of int32 element type and unknown shape.\n\n TODO(mdan): Define TFT_SHAPE and add more examples.",
+          "TFT_ARRAY": "Array (or tensorflow::TensorList in the variant type registry).\n Note: this is not to be confused with the deprecated `TensorArray*` ops\n which are not supported by FullType.\n This type represents a random-access list whose elements can be\n described by a single type. Although immutable, Array is expected to\n support efficient mutation semantics (i.e. element update) in the\n user-facing API.\n The element type may be generic or even TFT_ANY for a heterogenous list.\n\n Parametrization:\n   TFT_ARRAY[\u003celement type\u003e]\n   * \u003celement type\u003e may be any concrete type.\n\n Examples:\n   TFT_ARRAY[TFT_TENSOR[TFT_INT32]] is a TensorArray holding int32 Tensors\n     of any shape.\n   TFT_ARRAY[TFT_TENSOR[TFT_UNKNOWN]] is a TensorArray holding Tensors of\n     mixed element types.\n   TFT_ARRAY[TFT_UNKNOWN] is a TensorArray holding any element type.\n   TFT_ARRAY[] is equivalent to TFT_ARRAY[TFT_UNKNOWN].\n   TFT_ARRAY[TFT_ARRAY[]] is an array or arrays (of unknown types).",
+          "TFT_OPTIONAL": "Optional (or tensorflow::OptionalVariant in the variant type registry).\n This type represents a value that may either hold an element of a single\n specified type, or nothing at all.\n\n Parametrization:\n   TFT_OPTIONAL[\u003celement type\u003e]\n   * \u003celement type\u003e may be any concrete type.\n\n Examples:\n   TFT_OPTIONAL[TFT_TENSOR[TFT_INT32]] is an Optional holding an int32\n     Tensor of any shape.",
+          "TFT_LITERAL": "Literal types describe compile-time constant values.\n Literal types may also participate in dependent types.\n\n Parametrization:\n   TFT_LITERAL[\u003cvalue type\u003e]{\u003cvalue\u003e}\n   * \u003cvalue type\u003e may be any concrete type compatible that can hold \u003cvalue\u003e\n   * \u003cvalue\u003e is the type's attribute, and holds the actual literal value\n\n Examples:\n   TFT_LITERAL[TFT_INT32]{1} is the compile-time constant 1.",
+          "TFT_ENCODED": "Encoding types describe a value of a certain type, encoded as a different\n type.\n\n Parametrization:\n   TFT_ENCODED[\u003cencoded type\u003e, \u003cencoding type\u003e]\n   * \u003cencoded type\u003e may be any type\n   * \u003cencoding type\u003e may be any type\n\n Examples:\n   TFT_ENCODING[TFT_INT32, TFT_STRING] is an integer encoded as string.",
+          "TFT_SHAPE_TENSOR": "The type of \"shape tensors\" where the runtime value is the shape of\n some tensor(s), i.e. the output of tf.shape.\n Shape tensors have special, host-only placement, in contrast to\n TFT_TENSOR[TFT_INT32] which is the type of a normal numeric tensor\n with no special placement.\n\n Examples:\n   TFT_SHAPE_TENSOR[TFT_INT32] is the most common\n   TFT_SHAPE_TENSOR[TFT_INT64] is also allowed",
+          "TFT_BOOL": "The bool element type.\n TODO(mdan): Quantized types, legacy representations (e.g. ref)",
+          "TFT_UINT8": "Integer element types.",
+          "TFT_HALF": "Floating-point element types.",
+          "TFT_COMPLEX64": "Complex element types.\n TODO(mdan): Represent as TFT_COMPLEX[TFT_DOUBLE] instead?",
+          "TFT_STRING": "The string element type.",
+          "TFT_DATASET": "Datasets created by tf.data ops and APIs. Datasets have generator/iterable\n semantics, that is, one can construct an iterator from them. Like\n Array, they are considered to return elements that can be described\n by a single type. Unlike Array, they do not support random access or\n mutation, and can potentially produce an infinite number of elements.\n A datasets can produce logical structures (e.g. multiple elements). This\n is expressed using TFT_PRODUCT.\n\n\n Parametrization: TFT_DATASET[\u003celement type\u003e].\n   * \u003celement type\u003e may be a concrete type or a type symbol. It represents\n     the data type of the elements produced by the dataset.\n\n Examples:\n   TFT_DATSET[TFT_TENSOR[TFT_INT32]] is a Dataset producing single int32\n     Tensors of unknown shape.\n   TFT_DATSET[TFT_PRODUCT[TFT_TENSOR[TFT_INT32], TFT_TENSOR[TFT_FLOAT32]] is\n     a Dataset producing pairs of Tensors, one integer and one float.\n Note: The high ID number is to prepare for the eventuality that Datasets\n will be supported by user types in the future.",
+          "TFT_RAGGED": "A ragged tensor created by tf.ragged ops and APIs.\n\n Parametrization: TFT_RAGGED[\u003celement_type\u003e].",
+          "TFT_ITERATOR": "Iterators created by tf.data ops and APIs. Very similar to Datasets, except\n they are mutable.\n\n\n Parametrization: TFT_ITERATOR[\u003celement type\u003e].\n   * \u003celement type\u003e may be a concrete type or a type symbol. It represents\n     the data type of the elements produced by the dataset.",
+          "TFT_MUTEX_LOCK": "A mutex lock tensor, produced by tf.raw_ops.MutexLock.\n Unlike strict execution models, where ownership of a lock is denoted by\n \"running after the lock has been acquired\", in non-strict mode, lock\n ownership is in the true sense: \"the op argument representing the lock is\n available\".\n Mutex locks are the dynamic counterpart of control dependencies.\n TODO(mdan): Properly document this thing.\n\n Parametrization: TFT_MUTEX_LOCK[].",
+          "TFT_LEGACY_VARIANT": "The equivalent of a Tensor with DT_VARIANT dtype, kept here to simplify\n translation. This type should not normally appear after type inference.\n Note that LEGACY_VARIANT != ANY: TENSOR[INT32] is a subtype of ANY, but is\n not a subtype of LEGACY_VARIANT."
+        }
       },
       "tensorflow.FunctionDef": {
         "type": "object",
@@ -3540,7 +3586,11 @@
           "ON_1",
           "ON_2"
         ],
-        "description": "Control the use of the compiler/jit.  Experimental."
+        "description": "Control the use of the compiler/jit.  Experimental.",
+        "x-enumDescriptions": {
+          "DEFAULT": "Default setting (\"off\" now, but later expected to be \"on\")",
+          "ON_1": "The following settings turn on compilation, with higher values being\n more aggressive.  Higher values may reduce opportunities for parallelism\n and may use more memory.  (At present, there is no distinction, but this\n is expected to change.)"
+        }
       },
       "tensorflow.OptimizerOptions.Level": {
         "type": "string",
@@ -3549,7 +3599,11 @@
           "L1",
           "L0"
         ],
-        "description": "Optimization level"
+        "description": "Optimization level",
+        "x-enumDescriptions": {
+          "L1": "L1 is the default level.\n Optimization performed at L1 :\n 1. Common subexpression elimination\n 2. Constant folding",
+          "L0": "No optimizations"
+        }
       },
       "tensorflow.PartialRunSetupRequest": {
         "type": "object",
@@ -4130,7 +4184,16 @@
           "RECOMPUTATION_HEURISTICS",
           "SCHEDULING_HEURISTICS",
           "HEURISTICS"
-        ]
+        ],
+        "x-enumDescriptions": {
+          "DEFAULT_MEM_OPT": "The default setting (SCHEDULING and SWAPPING HEURISTICS only)",
+          "NO_MEM_OPT": "Disabled in the meta-optimizer.",
+          "MANUAL": "Driven by manual op-level annotations.",
+          "SWAPPING_HEURISTICS": "Swapping heuristic will move a tensor from the GPU to the CPU and move\n it back when needed to reduce peak memory usage.",
+          "RECOMPUTATION_HEURISTICS": "Recomputation heuristics will recompute ops (such as Relu activation)\n during backprop instead of storing them, reducing peak memory usage.",
+          "SCHEDULING_HEURISTICS": "Scheduling will split big ops such as AddN and try to enforce a schedule\n of the new computations that decreases peak memory usage.",
+          "HEURISTICS": "Use any combination of swapping and recomputation heuristics."
+        }
       },
       "tensorflow.RewriterConfig.NumIterationsType": {
         "type": "string",
@@ -4152,7 +4215,12 @@
           "AGGRESSIVE",
           "EXPERIMENTAL_MLIR",
           "EXPERIMENTAL_BOTH"
-        ]
+        ],
+        "x-enumDescriptions": {
+          "AGGRESSIVE": "Enable some aggressive optimizations that use assumptions that TF graphs\n may break. For example, assume the shape of a placeholder matches its\n actual feed.",
+          "EXPERIMENTAL_MLIR": "Run MLIR pass if there's one implemented in TFG, do nothing otherwise.\n I.e., if there's no corresponding TFG pass, it's an OFF. This is supposed\n to be mapped with `ON` and there's no `AGGRESSIVE` in MLIR pass now.",
+          "EXPERIMENTAL_BOTH": "Run both MLIR and Grappler passes consecutively and MLIR pass will come\n first."
+        }
       },
       "tensorflow.RunCallableRequest": {
         "type": "object",
@@ -4921,7 +4989,27 @@
           "DATA_LOSS",
           "DO_NOT_USE_RESERVED_FOR_FUTURE_EXPANSION_USE_DEFAULT_IN_SWITCH_INSTEAD_"
         ],
-        "description": "The canonical error codes for TensorFlow APIs.\n\n Warnings:\n\n -   Do not change any numeric assignments.\n -   Changes to this list should only be made if there is a compelling\n     need that can't be satisfied in another way.  Such changes\n     must be approved by at least two OWNERS.\n -   These error codes must match gRPC and protobuf error codes (except for\n     DO_NOT_USE_RESERVED_FOR_FUTURE_EXPANSION_USE_DEFAULT_IN_SWITCH_INSTEAD_).\n\n Sometimes multiple error codes may apply.  Services should return\n the most specific error code that applies.  For example, prefer\n OUT_OF_RANGE over FAILED_PRECONDITION if both codes apply.\n Similarly prefer NOT_FOUND or ALREADY_EXISTS over FAILED_PRECONDITION."
+        "description": "The canonical error codes for TensorFlow APIs.\n\n Warnings:\n\n -   Do not change any numeric assignments.\n -   Changes to this list should only be made if there is a compelling\n     need that can't be satisfied in another way.  Such changes\n     must be approved by at least two OWNERS.\n -   These error codes must match gRPC and protobuf error codes (except for\n     DO_NOT_USE_RESERVED_FOR_FUTURE_EXPANSION_USE_DEFAULT_IN_SWITCH_INSTEAD_).\n\n Sometimes multiple error codes may apply.  Services should return\n the most specific error code that applies.  For example, prefer\n OUT_OF_RANGE over FAILED_PRECONDITION if both codes apply.\n Similarly prefer NOT_FOUND or ALREADY_EXISTS over FAILED_PRECONDITION.",
+        "x-enumDescriptions": {
+          "OK": "Not an error; returned on success",
+          "CANCELLED": "The operation was cancelled (typically by the caller).",
+          "UNKNOWN": "Unknown error.  An example of where this error may be returned is\n if a Status value received from another address space belongs to\n an error-space that is not known in this address space.  Also\n errors raised by APIs that do not return enough error information\n may be converted to this error.",
+          "INVALID_ARGUMENT": "Client specified an invalid argument.  Note that this differs\n from FAILED_PRECONDITION.  INVALID_ARGUMENT indicates arguments\n that are problematic regardless of the state of the system\n (e.g., a malformed file name).",
+          "DEADLINE_EXCEEDED": "Deadline expired before operation could complete.  For operations\n that change the state of the system, this error may be returned\n even if the operation has completed successfully.  For example, a\n successful response from a server could have been delayed long\n enough for the deadline to expire.",
+          "NOT_FOUND": "Some requested entity (e.g., file or directory) was not found.\n For privacy reasons, this code *may* be returned when the client\n does not have the access right to the entity.",
+          "ALREADY_EXISTS": "Some entity that we attempted to create (e.g., file or directory)\n already exists.",
+          "PERMISSION_DENIED": "The caller does not have permission to execute the specified\n operation.  PERMISSION_DENIED must not be used for rejections\n caused by exhausting some resource (use RESOURCE_EXHAUSTED\n instead for those errors).  PERMISSION_DENIED must not be\n used if the caller can not be identified (use UNAUTHENTICATED\n instead for those errors).",
+          "UNAUTHENTICATED": "The request does not have valid authentication credentials for the\n operation.",
+          "RESOURCE_EXHAUSTED": "Some resource has been exhausted, perhaps a per-user quota, or\n perhaps the entire file system is out of space.",
+          "FAILED_PRECONDITION": "Operation was rejected because the system is not in a state\n required for the operation's execution.  For example, directory\n to be deleted may be non-empty, an rmdir operation is applied to\n a non-directory, etc.\n\n A litmus test that may help a service implementor in deciding\n between FAILED_PRECONDITION, ABORTED, and UNAVAILABLE:\n  (a) Use UNAVAILABLE if the client can retry just the failing call.\n  (b) Use ABORTED if the client should retry at a higher-level\n      (e.g., restarting a read-modify-write sequence).\n  (c) Use FAILED_PRECONDITION if the client should not retry until\n      the system state has been explicitly fixed.  E.g., if an \"rmdir\"\n      fails because the directory is non-empty, FAILED_PRECONDITION\n      should be returned since the client should not retry unless\n      they have first fixed up the directory by deleting files from it.\n  (d) Use FAILED_PRECONDITION if the client performs conditional\n      REST Get/Update/Delete on a resource and the resource on the\n      server does not match the condition. E.g., conflicting\n      read-modify-write on the same resource.",
+          "ABORTED": "The operation was aborted, typically due to a concurrency issue\n like sequencer check failures, transaction aborts, etc.\n\n See litmus test above for deciding between FAILED_PRECONDITION,\n ABORTED, and UNAVAILABLE.",
+          "OUT_OF_RANGE": "Operation tried to iterate past the valid input range.  E.g., seeking or\n reading past end of file.\n\n Unlike INVALID_ARGUMENT, this error indicates a problem that may\n be fixed if the system state changes. For example, a 32-bit file\n system will generate INVALID_ARGUMENT if asked to read at an\n offset that is not in the range [0,2^32-1], but it will generate\n OUT_OF_RANGE if asked to read from an offset past the current\n file size.\n\n There is a fair bit of overlap between FAILED_PRECONDITION and\n OUT_OF_RANGE.  We recommend using OUT_OF_RANGE (the more specific\n error) when it applies so that callers who are iterating through\n a space can easily look for an OUT_OF_RANGE error to detect when\n they are done.",
+          "UNIMPLEMENTED": "Operation is not implemented or not supported/enabled in this service.",
+          "INTERNAL": "Internal errors.  Means some invariant expected by the underlying\n system has been broken.  If you see one of these errors,\n something is very broken.",
+          "UNAVAILABLE": "The service is currently unavailable.  This is a most likely a\n transient condition and may be corrected by retrying with\n a backoff.\n\n See litmus test above for deciding between FAILED_PRECONDITION,\n ABORTED, and UNAVAILABLE.",
+          "DATA_LOSS": "Unrecoverable data loss or corruption.",
+          "DO_NOT_USE_RESERVED_FOR_FUTURE_EXPANSION_USE_DEFAULT_IN_SWITCH_INSTEAD_": "An extra enum entry to prevent people from writing code that\n fails to compile when a new code is added.\n\n Nobody should ever reference this enumeration entry. In particular,\n if you write C++ code that switches on this enumeration, add a default:\n case instead of a case that mentions this enumeration entry.\n\n Nobody should rely on the value (currently 20) listed here.  It\n may change in the future."
+        }
       }
     }
   },

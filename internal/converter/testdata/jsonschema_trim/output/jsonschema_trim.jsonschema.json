@@ -21,7 +21,11 @@
         "KIND_UNSPECIFIED",
         "KIND_WIDGET"
       ],
-      "description": "Kind describes a thing."
+      "description": "Kind describes a thing.",
+      "x-enumDescriptions": {
+        "KIND_UNSPECIFIED": "KIND_UNSPECIFIED is the default value.",
+        "KIND_WIDGET": "KIND_WIDGET is a widget."
+      }
     },
     "jsonschema.trim.Thing": {
       "type": "object",

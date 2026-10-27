@@ -230,6 +230,8 @@ components:
          `Value` type union.
 
          The JSON representation for `NullValue` is JSON `null`.
+      x-enumDescriptions:
+        NULL_VALUE: Null value.
     google.protobuf.StringValue:
       type: string
       description: A string value; `null` is also accepted.

@@ -6,6 +6,7 @@ import (
 
 	"github.com/pb33f/libopenapi/datamodel/high/base"
 	v3 "github.com/pb33f/libopenapi/datamodel/high/v3"
+	"github.com/pb33f/libopenapi/orderedmap"
 	"github.com/pb33f/libopenapi/utils"
 	"go.yaml.in/yaml/v4"
 	"google.golang.org/protobuf/reflect/protoreflect"
@@ -87,6 +88,8 @@ func AddEnumToSchema(opts options.Options, ed protoreflect.EnumDescriptor, doc *
 func enumToSchema(opts options.Options, tt protoreflect.EnumDescriptor) (string, *base.Schema) {
 	opts.Logger.Debug("enumToSchema", slog.Any("descriptor", tt.FullName()))
 	children := []*yaml.Node{}
+	// The comments of the values, which documentation renderers such as Scalar and Redocly show next to each value.
+	descriptions := &yaml.Node{Kind: yaml.MappingNode, Tag: "!!map"}
 	values := tt.Values()
 	for i := 0; i < values.Len(); i++ {
 		value := values.Get(i)
@@ -95,6 +98,9 @@ func enumToSchema(opts options.Options, tt protoreflect.EnumDescriptor) (string,
 			continue // Skip this enum value
 		}
 		children = append(children, utils.CreateStringNode(string(value.Name())))
+		if comment := util.FormatComments(value.ParentFile().SourceLocations().ByDescriptor(value)); comment != "" {
+			descriptions.Content = append(descriptions.Content, utils.CreateStringNode(string(value.Name())), utils.CreateStringNode(comment))
+		}
 		if opts.IncludeNumberEnumValues {
 			children = append(children, utils.CreateIntNode(strconv.FormatInt(int64(value.Number()), 10)))
 		}
@@ -113,6 +119,10 @@ func enumToSchema(opts options.Options, tt protoreflect.EnumDescriptor) (string,
 		Description: util.FormatComments(tt.ParentFile().SourceLocations().ByDescriptor(tt)),
 		Type:        types,
 		Enum:        children,
+	}
+	if len(descriptions.Content) > 0 {
+		s.Extensions = orderedmap.New[string, *yaml.Node]()
+		s.Extensions.Set("x-enumDescriptions", descriptions)
 	}
 	return string(tt.FullName()), s
 }
