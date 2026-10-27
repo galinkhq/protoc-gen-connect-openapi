@@ -1291,7 +1291,10 @@
           "NULL_VALUE"
         ],
         "title": "NullValue",
-        "type": "string"
+        "type": "string",
+        "x-enumDescriptions": {
+          "NULL_VALUE": "Null value."
+        }
       },
       "google.protobuf.Struct": {
         "additionalProperties": {

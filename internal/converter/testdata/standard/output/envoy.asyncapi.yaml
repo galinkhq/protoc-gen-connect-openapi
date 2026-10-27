@@ -1219,6 +1219,8 @@ components:
                 - NULL_VALUE
             title: NullValue
             type: string
+            x-enumDescriptions:
+                NULL_VALUE: Null value.
         google.protobuf.Struct:
             additionalProperties:
                 $ref: '#/components/schemas/google.protobuf.Value'
